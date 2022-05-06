@@ -337,9 +337,10 @@ func (m *MultishareOpsManager) instanceNeedsExpand(ctx context.Context, share *f
 		sumShareBytes = sumShareBytes + s.CapacityBytes
 	}
 
-	remainingBytes := share.Parent.CapacityBytes - sumShareBytes
-	if remainingBytes < capacityNeeded {
-		alignBytes := util.AlignBytes(capacityNeeded+sumShareBytes, util.GbToBytes(share.Parent.CapacityStepSizeGb))
+	var remainingBytes int64
+	remainingBytes = share.Parent.CapacityBytes - sumShareBytes
+	if remainingBytes < share.CapacityBytes {
+		alignBytes := util.AlignBytes(share.CapacityBytes+sumShareBytes, util.GbToBytes(share.Parent.CapacityStepSizeGb))
 		targetBytes := util.Min(alignBytes, util.MaxMultishareInstanceSizeBytes)
 		return true, targetBytes, nil
 	}
