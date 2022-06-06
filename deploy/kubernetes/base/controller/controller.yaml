@@ -110,6 +110,8 @@ spec:
             - "--endpoint=unix:/csi/csi.sock"
             - "--nodeid=$(KUBE_NODE_NAME)"
             - "--controller=true"
+            - "--enable-multishare=true"
+            - "--filestore-service-endpoint=staging-file.sandbox.googleapis.com"
           env:
             - name: KUBE_NODE_NAME
               valueFrom:

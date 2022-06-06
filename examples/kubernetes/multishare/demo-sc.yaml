@@ -11,4 +11,5 @@ parameters:
   multishare: "true"
   # # Name of the VPC. Note that non-default VPCs require special firewall rules to be setup: TODO
   # network: default
+  instance-storageclass-label: "csi-filestore-multishare"
 allowVolumeExpansion: true
