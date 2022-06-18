@@ -324,13 +324,18 @@ func (m *MultishareOpsManager) runEligibleInstanceCheck(ctx context.Context, ins
 	var readyEligibleInstances []*file.MultishareInstance
 	nonReadyInstanceCount := 0
 	for _, instance := range instances {
+		if instance.State != "READY" {
+			klog.V(5).Infof("Instance %s/%s/%s with state %s is not eligible", instance.Project, instance.Location, instance.Name, instance.State)
+			continue
+		}
+
 		op, err := containsOpWithInstanceTargetPrefix(instance, ops)
 		if err != nil {
 			klog.Errorf("failed to check eligibility of instance %s", instance.Name)
 			return nil, 0, err
 		}
 
-		if op == nil {
+		if op == nil && instance.State == "READY" {
 			shares, err := m.cloud.File.ListShares(ctx, &file.ListFilter{Project: instance.Project, Location: instance.Location, InstanceName: instance.Name})
 			if err != nil {
 				klog.Errorf("Failed to list shares of instance %s/%s/%s, err:%v", instance.Project, instance.Location, instance.Name, err)
@@ -345,13 +350,9 @@ func (m *MultishareOpsManager) runEligibleInstanceCheck(ctx context.Context, ins
 			continue
 		}
 
+		// Is this line duplicated with instance.state == "DELETING"???
 		// instances whose delete is in progress should not be accounted as non-ready instances.
 		if op.Type == util.InstanceDelete {
-			continue
-		}
-
-		if instance.State == "DELETING" || instance.State == "ERROR" {
-			klog.V(5).Infof("Instance %s/%s/%s with state %s is not eligible", instance.Project, instance.Location, instance.Name, instance.State)
 			continue
 		}
 

@@ -1218,6 +1218,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 				{
 					Name:     "test-instance-1",
@@ -1226,6 +1227,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			expectedReadyInstance: []*file.MultishareInstance{
@@ -1236,6 +1238,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 				{
 					Name:     "test-instance-2",
@@ -1244,6 +1247,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 		},
@@ -1258,6 +1262,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			expectedNonReadyCount: 1,
@@ -1280,6 +1285,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			expectedNonReadyCount: 1,
@@ -1302,6 +1308,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			expectedNonReadyCount: 1,
@@ -1324,6 +1331,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			expectedNonReadyCount: 1,
@@ -1346,6 +1354,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			ops: []*OpInfo{
@@ -1367,6 +1376,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 				{
 					Name:     "instance-2",
@@ -1375,6 +1385,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			expectedReadyInstance: []*file.MultishareInstance{
@@ -1385,6 +1396,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			expectedNonReadyCount: 1,
@@ -1407,6 +1419,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
+					State: "READY",
 				},
 			},
 			initShares: []*file.Share{
@@ -1521,6 +1534,22 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name:   "non-ready instances 0, other instance state not count as ready",
+			prefix: "testprefix",
+			initInstances: []*file.MultishareInstance{
+				{
+					Name:     "instance-1",
+					Location: "us-central1",
+					Project:  "test-project",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+					State: "REPAIRING",
+				},
+			},
+			expectedNonReadyCount: 0,
 		},
 	}
 	for _, tc := range tests {
