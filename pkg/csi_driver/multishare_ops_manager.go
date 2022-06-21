@@ -350,12 +350,6 @@ func (m *MultishareOpsManager) runEligibleInstanceCheck(ctx context.Context, ins
 			continue
 		}
 
-		// Is this line duplicated with instance.state == "DELETING"???
-		// instances whose delete is in progress should not be accounted as non-ready instances.
-		if op.Type == util.InstanceDelete {
-			continue
-		}
-
 		klog.Infof("Instance %s/%s/%s is not ready with ongoing operation %s type %s", instance.Project, instance.Location, instance.Name, op.Id, op.Type.String())
 		nonReadyInstanceCount += 1
 		// TODO: If we see > 1 instances with 0 shares (these could be possibly leaked instances where the driver hit timeout during creation op was in progress), should we trigger delete op for such instances? Possibly yes. Given that instance create/delete and share create/delete is serialized, maybe yes.

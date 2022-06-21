@@ -1354,7 +1354,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					Labels: map[string]string{
 						util.ParamMultishareInstanceScLabelKey: "testprefix",
 					},
-					State: "READY",
+					State: "DELETING",
 				},
 			},
 			ops: []*OpInfo{
@@ -1536,7 +1536,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-ready instances 0, other instance state not count as ready",
+			name:   "ready instance, non-ready instances, other instance state not count",
 			prefix: "testprefix",
 			initInstances: []*file.MultishareInstance{
 				{
