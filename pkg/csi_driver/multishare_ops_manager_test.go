@@ -1587,7 +1587,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 					State: "READY",
 				},
 			},
-			expectedNonReadyCount: 2,
+			expectedNonReadyCount: 3,
 			ops: []*OpInfo{
 				{
 					Id:     "op1",
@@ -1620,6 +1620,47 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 				},
 			},
 			expectedNonReadyCount: 1,
+			ops: []*OpInfo{
+				{
+					Id:     "op1",
+					Target: "projects/test-project/locations/us-central1/instances/instance-1",
+					Type:   util.InstanceCreate,
+				},
+			},
+		},
+		{
+			name:   "repairing instance count as non-ready",
+			prefix: "testprefix",
+			initInstances: []*file.MultishareInstance{
+				{
+					Name:     "instance-1",
+					Location: "us-central1",
+					Project:  "test-project",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+					State: "CREATING",
+				},
+				{
+					Name:     "instance-2",
+					Location: "us-central1",
+					Project:  "test-project",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+					State: "ERROR",
+				},
+				{
+					Name:     "instance-3",
+					Location: "us-central1",
+					Project:  "test-project",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+					State: "REPAIRING",
+				},
+			},
+			expectedNonReadyCount: 2,
 			ops: []*OpInfo{
 				{
 					Id:     "op1",
