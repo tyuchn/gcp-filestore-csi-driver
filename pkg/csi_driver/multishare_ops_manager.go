@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net"
 	"strings"
 	"sync"
 
@@ -67,10 +68,6 @@ func (m *MultishareOpsManager) setupEligibleInstanceAndStartWorkflow(ctx context
 
 	// Check ShareCreateMap if a share create is already in progress.
 	shareName := util.ConvertVolToShareName(req.Name)
-	instanceScPrefix, err := getInstanceSCPrefix(req)
-	if err != nil {
-		return nil, nil, status.Error(codes.InvalidArgument, err.Error())
-	}
 
 	ops, err := m.listMultishareResourceRunningOps(ctx)
 	if err != nil {
@@ -102,7 +99,7 @@ func (m *MultishareOpsManager) setupEligibleInstanceAndStartWorkflow(ctx context
 	}
 
 	// No share or running share create op found. Proceed to eligible instance check.
-	eligible, numIneligible, err := m.runEligibleInstanceCheck(ctx, instanceScPrefix, ops)
+	eligible, numIneligible, err := m.runEligibleInstanceCheck(ctx, req, ops, instance)
 	if err != nil {
 		return nil, nil, status.Error(codes.Aborted, err.Error())
 	}
@@ -316,8 +313,8 @@ func (m *MultishareOpsManager) verifyNoRunningInstanceOrShareOpsForInstance(inst
 }
 
 // runEligibleInstanceCheck returns a list of ready and non-ready instances.
-func (m *MultishareOpsManager) runEligibleInstanceCheck(ctx context.Context, instanceScPrefix string, ops []*OpInfo) ([]*file.MultishareInstance, int, error) {
-	instances, err := m.listInstanceForStorageClassPrefix(ctx, instanceScPrefix)
+func (m *MultishareOpsManager) runEligibleInstanceCheck(ctx context.Context, req *csi.CreateVolumeRequest, ops []*OpInfo, target *file.MultishareInstance) ([]*file.MultishareInstance, int, error) {
+	instances, err := m.listInstanceForStorageClass(ctx, req, target)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -620,16 +617,83 @@ func containsOpWithInstanceTargetPrefix(instance *file.MultishareInstance, ops [
 	return nil, nil
 }
 
-func (m *MultishareOpsManager) listInstanceForStorageClassPrefix(ctx context.Context, prefix string) ([]*file.MultishareInstance, error) {
+// listInstanceForStorageClass will list all instances in current project,
+// but only matched instances will be returned.
+func (m *MultishareOpsManager) listInstanceForStorageClass(ctx context.Context, req *csi.CreateVolumeRequest, target *file.MultishareInstance) ([]*file.MultishareInstance, error) {
 	instances, err := m.cloud.File.ListMultishareInstances(ctx, &file.ListFilter{Project: m.cloud.Project, Location: "-"})
 	if err != nil {
 		return nil, err
 	}
 	var finalInstances []*file.MultishareInstance
 	for _, i := range instances {
-		if val, ok := i.Labels[util.ParamMultishareInstanceScLabelKey]; ok && val == prefix {
+		matched, err := isMatchedInstance(i, target, req)
+		if err != nil {
+			return nil, err
+		}
+		if matched {
 			finalInstances = append(finalInstances, i)
 		}
 	}
 	return finalInstances, nil
+}
+
+// isIpWithinRange is an ip address is within the given ip range.
+func isIpWithinRange(ipAddress, ipRange string) (bool, error) {
+	_, ipnet, err := net.ParseCIDR(ipRange)
+	if err != nil {
+		return false, fmt.Errorf("failed to parse cidr range %s: %v", ipRange, err)
+	}
+	return ipnet.Contains(net.ParseIP(ipAddress)), nil
+}
+
+// An instances will be considered as "matched" iff it satisfied the following conditions:
+// 1. The network field in filestore instance must equal value of "network"
+//    in StorageClass parameters.
+// 2. The networks.ipAddresses[0] field in filestore instance must be within
+//    the ip range of value of "reserved-ipv4-cidr" in StorageClass parameters
+//    if key "reserved-ipv4-cidr" exists.
+// 3. The kmsKeyName field in filestore instance must equal to value of
+//    "instance-encryption-kms-key" in StorgeClass parameters
+//    if key "instance-encryption-kms-key" exists.
+// 4. Value of label "storage_gke_io_storage-class-id" of filestore instance
+//    must equal to value of key "instance-storageclass-label"
+//    in parameters of StorageClass.
+// 5. The networks.ipAddresses[0] field in filestore instance must
+//    be within the ip range of value of "reserved-ip-range"
+//    if key "reserved-ip-range" exists in StorageClass parameter.
+func isMatchedInstance(source, target *file.MultishareInstance, req *csi.CreateVolumeRequest) (bool, error) {
+	if scPrefixSource, ok := source.Labels[util.ParamMultishareInstanceScLabelKey]; ok {
+		if scPrefixTarget, ok := source.Labels[util.ParamMultishareInstanceScLabelKey]; !ok || scPrefixSource != scPrefixTarget {
+			return false, nil
+		}
+	} else {
+		return false, nil
+	}
+	params := req.GetParameters()
+	if val, ok := params[paramReservedIPV4CIDR]; ok {
+		withinRange, err := isIpWithinRange(source.Network.Ip, val)
+		if err != nil {
+			return false, err
+		}
+		if !withinRange {
+			return false, nil
+		}
+	}
+	if val, ok := params[paramReservedIPRange]; ok {
+		withinRange, err := isIpWithinRange(source.Network.Ip, val)
+		if err != nil {
+			return false, err
+		}
+		if !withinRange {
+			return false, nil
+		}
+	}
+	if source.Location == target.Location &&
+		source.Tier == target.Tier &&
+		source.Network.Name == target.Network.Name &&
+		source.Network.ConnectMode == target.Network.ConnectMode &&
+		source.KmsKeyName == target.KmsKeyName {
+		return true, nil
+	}
+	return false, nil
 }

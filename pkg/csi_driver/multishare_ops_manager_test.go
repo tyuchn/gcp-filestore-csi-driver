@@ -448,7 +448,7 @@ func TestInstanceNeedsExpand(t *testing.T) {
 	}
 }
 
-func TestListInstanceForStorageClassPrefix(t *testing.T) {
+func TestListInstanceForStorageClass(t *testing.T) {
 	found := func(inputList []*file.MultishareInstance, i *file.MultishareInstance) bool {
 		for _, f := range inputList {
 			if f.Project == i.Project && f.Location == i.Location && f.Name == i.Name {
@@ -461,16 +461,20 @@ func TestListInstanceForStorageClassPrefix(t *testing.T) {
 	tests := []struct {
 		name             string
 		initInstanceList []*file.MultishareInstance
-		prefix           string
+		params           map[string]string
 		expectedList     []*file.MultishareInstance
 	}{
 		{
-			name:   "empty init inistance list",
-			prefix: "testprefix",
+			name: "empty init inistance list",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 		},
 		{
-			name:   "non-empty init inistance list",
-			prefix: "testprefix",
+			name: "non-empty init inistance list",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstanceList: []*file.MultishareInstance{
 				{
 					Name:     "test-instance",
@@ -493,8 +497,10 @@ func TestListInstanceForStorageClassPrefix(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-empty init inistance list, 1 instance match",
-			prefix: "testprefix-1",
+			name: "non-empty init inistance list, 1 instance match",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix-1",
+			},
 			initInstanceList: []*file.MultishareInstance{
 				{
 					Name:     "test-instance-1",
@@ -525,8 +531,10 @@ func TestListInstanceForStorageClassPrefix(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-empty init inistance list, 2 instances match",
-			prefix: "testprefix",
+			name: "non-empty init inistance list, 2 instances match",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstanceList: []*file.MultishareInstance{
 				{
 					Name:     "test-instance-1",
@@ -572,6 +580,77 @@ func TestListInstanceForStorageClassPrefix(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "non-empty init inistance list, sc prefix label not specified in instance",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
+			initInstanceList: []*file.MultishareInstance{
+				{
+					Name:     "test-instance",
+					Project:  "test-project",
+					Location: "us-central1",
+					Labels:   map[string]string{},
+				},
+			},
+		},
+		{
+			name:   "non-empty init inistance list, sc prefix not specified in StorageClass",
+			params: map[string]string{},
+			initInstanceList: []*file.MultishareInstance{
+				{
+					Name:     "test-instance",
+					Project:  "test-project",
+					Location: "us-central1",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+				},
+			},
+		},
+		{
+			name: "non-empty init inistance list, sc network not specified",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
+			initInstanceList: []*file.MultishareInstance{
+				{
+					Name:     "test-instance-0",
+					Project:  "test-project",
+					Location: "us-central1",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+					Network: file.Network{
+						Name: "default",
+					},
+				},
+				{
+					Name:     "test-instance-1",
+					Project:  "test-project",
+					Location: "us-central1",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+					Network: file.Network{
+						Name: "shared-network",
+					},
+				},
+			},
+			expectedList: []*file.MultishareInstance{
+				{
+					Name:     "test-instance-0",
+					Project:  "test-project",
+					Location: "us-central1",
+					Labels: map[string]string{
+						util.ParamMultishareInstanceScLabelKey: "testprefix",
+					},
+					Network: file.Network{
+						Name: "default",
+					},
+				},
+			},
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -585,7 +664,7 @@ func TestListInstanceForStorageClassPrefix(t *testing.T) {
 			}
 
 			manager := NewMultishareOpsManager(cloudProvider)
-			filteredList, err := manager.listInstanceForStorageClassPrefix(context.Background(), tc.prefix)
+			filteredList, _ := manager.listInstanceForStorageClass(context.Background(), tc.params)
 			for _, fi := range filteredList {
 				if !found(tc.expectedList, fi) {
 					t.Errorf("Failed to find instance")
@@ -1197,7 +1276,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 	}
 	tests := []struct {
 		name                  string
-		prefix                string
+		params                map[string]string
 		ops                   []*OpInfo
 		initInstances         []*file.MultishareInstance
 		initShares            []*file.Share
@@ -1208,8 +1287,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			name: "no instances",
 		},
 		{
-			name:   "all ready instances",
-			prefix: "testprefix",
+			name: "all ready instances",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "test-instance-1",
@@ -1252,8 +1333,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-ready instances (instance update)",
-			prefix: "testprefix",
+			name: "non-ready instances (instance update)",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1275,8 +1358,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-ready instances (share create)",
-			prefix: "testprefix",
+			name: "non-ready instances (share create)",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1298,8 +1383,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-ready instances (share update)",
-			prefix: "testprefix",
+			name: "non-ready instances (share update)",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1321,8 +1408,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-ready instances (share delete)",
-			prefix: "testprefix",
+			name: "non-ready instances (share delete)",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1344,8 +1433,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-ready instances 0, instance delete not counted as ready",
-			prefix: "testprefix",
+			name: "non-ready instances 0, instance delete not counted as ready",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1366,8 +1457,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "non-ready instances (share delete), ready instance",
-			prefix: "testprefix",
+			name: "non-ready instances (share delete), ready instance",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1409,8 +1502,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "no ready instance, no non-ready instance, instance with 10 shares not eligible",
-			prefix: "testprefix",
+			name: "no ready instance, no non-ready instance, instance with 10 shares not eligible",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1536,8 +1631,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "ready instance, non-ready instances, other instance state not count",
-			prefix: "testprefix",
+			name: "ready instance, non-ready instances, other instance state not count",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1597,8 +1694,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "creating instance count as non-ready",
-			prefix: "testprefix",
+			name: "creating instance count as non-ready",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1629,8 +1728,10 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			},
 		},
 		{
-			name:   "repairing instance count as non-ready",
-			prefix: "testprefix",
+			name: "repairing instance count as non-ready",
+			params: map[string]string{
+				"instance-storageclass-label": "testprefix",
+			},
 			initInstances: []*file.MultishareInstance{
 				{
 					Name:     "instance-1",
@@ -1679,7 +1780,7 @@ func TestRunEligibleInstanceCheck(t *testing.T) {
 			cloudProvider, err := cloud.NewFakeCloud()
 			cloudProvider.File = s
 			manager := NewMultishareOpsManager(cloudProvider)
-			ready, nonReady, err := manager.runEligibleInstanceCheck(context.Background(), tc.prefix, tc.ops)
+			ready, nonReady, err := manager.runEligibleInstanceCheck(context.Background(), tc.params, tc.ops)
 			if err != nil {
 				t.Errorf("unexpected error")
 			}
