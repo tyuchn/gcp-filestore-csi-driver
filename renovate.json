@@ -39,8 +39,7 @@
       ],
       "versioning": "regex:^gke\\.gcr\\.io/debian-base:bullseye-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-gke\\.(?<build>\\d+)$",
     },
-  ],
-  {
+    {
       "groupName": "debian base",
       "groupSlug": "debian-base",
       "matchPackageNames": [
@@ -53,4 +52,5 @@
         "build",
       ],
     },
+  ],
 }
