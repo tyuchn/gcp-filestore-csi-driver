@@ -30,7 +30,7 @@ require (
 	k8s.io/klog/v2 v2.80.1
 	k8s.io/kubernetes v1.24.1
 	k8s.io/mount-utils v0.24.1
-	k8s.io/utils v0.0.0-20221107191617-1a15be271d1d
+	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
 	sigs.k8s.io/boskos v0.0.0-20201002225104-ae3497d24cd7
 	sigs.k8s.io/controller-runtime v0.12.1
 )
