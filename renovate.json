@@ -3,7 +3,7 @@
   "extends": [
     "config:base",
     ":gitSignOff"
-  ]
+  ],
   "includePaths": [
     "go.mod",
     "go.sum",
@@ -38,5 +38,5 @@
         "gke.gcr.io/debian-base"
       ],
     },
-  ]
+  ],
 }
