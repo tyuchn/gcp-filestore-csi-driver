@@ -2,7 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
-    ":gitSignOff"
+    ":gitSignOff",
   ],
   "includePaths": [
     "go.mod",
@@ -11,7 +11,7 @@
     "cmd/webhook/Dockerfile",
   ],
   "postUpdateOptions": [
-    "gomodTidy"
+    "gomodTidy",
   ],
   "ignorePresets": [":prHourlyLimit2"],
   "separateMajorMinor": true,
@@ -29,7 +29,7 @@
     "renovate/stop-updating",
     "kind/clean-up",
     "release-note/misc",
-    "ok-to-test"
+    "ok-to-test",
   ],
   "stopUpdatingLabel": "renovate/stop-updating",
   "packageRules": [
