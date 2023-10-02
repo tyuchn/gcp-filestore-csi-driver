@@ -10,7 +10,7 @@
     "Dockerfile",
     "cmd/webhook/Dockerfile",
   ],
-  postUpdateOptions: [
+  "postUpdateOptions": [
     "gomodTidy"
   ],
   "ignorePresets": [":prHourlyLimit2"],
