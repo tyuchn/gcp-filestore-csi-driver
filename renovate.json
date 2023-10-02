@@ -53,5 +53,14 @@
         "build",
       ],
     },
+    {
+      "matchPackageNames": [
+        "go",
+      ],
+      "allowedVersions": "<1.20",
+      "matchBaseBranches": [
+        "release-1.4",
+      ],
+    },
   ],
 }
