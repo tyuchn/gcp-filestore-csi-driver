@@ -25,13 +25,13 @@ require (
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 	gopkg.in/gcfg.v1 v1.2.0
-	k8s.io/api v0.27.2
-	k8s.io/apimachinery v0.27.2
+	k8s.io/api v0.27.6
+	k8s.io/apimachinery v0.27.6
 	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
-	k8s.io/component-base v0.27.2
+	k8s.io/component-base v0.27.6
 	k8s.io/klog/v2 v2.90.1
 	k8s.io/kubernetes v1.24.1
-	k8s.io/mount-utils v0.24.1
+	k8s.io/mount-utils v0.24.17
 	k8s.io/utils v0.0.0-20230209194617-a36077c30491
 	sigs.k8s.io/boskos v0.0.0-20230927184151-0b73532d05bf
 	sigs.k8s.io/controller-runtime v0.15.2
@@ -75,7 +75,7 @@ require (
 	github.com/prometheus/client_model v0.4.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
-	github.com/rasky/go-xdr v0.0.0-20170124162913-1a41d1a06c93 // indirect
+	github.com/rasky/go-xdr v0.0.0-20170217172119-4930550ba2e2 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
@@ -98,32 +98,32 @@ require (
 )
 
 replace (
-	k8s.io/api => k8s.io/api v0.26.0
-	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.26.0
-	k8s.io/apimachinery => k8s.io/apimachinery v0.26.0
-	k8s.io/apiserver => k8s.io/apiserver v0.26.0
-	k8s.io/cli-runtime => k8s.io/cli-runtime v0.26.0
-	k8s.io/client-go => k8s.io/client-go v0.26.0
-	k8s.io/cloud-provider => k8s.io/cloud-provider v0.26.0
-	k8s.io/cluster-bootstrap => k8s.io/cluster-bootstrap v0.26.0
-	k8s.io/code-generator => k8s.io/code-generator v0.26.0
-	k8s.io/component-base => k8s.io/component-base v0.26.0
+	k8s.io/api => k8s.io/api v0.26.9
+	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.26.9
+	k8s.io/apimachinery => k8s.io/apimachinery v0.26.9
+	k8s.io/apiserver => k8s.io/apiserver v0.26.9
+	k8s.io/cli-runtime => k8s.io/cli-runtime v0.26.9
+	k8s.io/client-go => k8s.io/client-go v0.26.9
+	k8s.io/cloud-provider => k8s.io/cloud-provider v0.26.9
+	k8s.io/cluster-bootstrap => k8s.io/cluster-bootstrap v0.26.9
+	k8s.io/code-generator => k8s.io/code-generator v0.26.9
+	k8s.io/component-base => k8s.io/component-base v0.26.9
 	k8s.io/component-helpers => k8s.io/component-helpers v0.26.0
-	k8s.io/controller-manager => k8s.io/controller-manager v0.26.0
-	k8s.io/cri-api => k8s.io/cri-api v0.26.0
-	k8s.io/csi-translation-lib => k8s.io/csi-translation-lib v0.26.0
-	k8s.io/kube-aggregator => k8s.io/kube-aggregator v0.26.0
-	k8s.io/kube-controller-manager => k8s.io/kube-controller-manager v0.26.0
-	k8s.io/kube-proxy => k8s.io/kube-proxy v0.26.0
-	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.26.0
-	k8s.io/kubectl => k8s.io/kubectl v0.26.0
-	k8s.io/kubelet => k8s.io/kubelet v0.26.0
-	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.26.0
-	k8s.io/metrics => k8s.io/metrics v0.26.0
-	k8s.io/mount-utils => k8s.io/mount-utils v0.26.0
+	k8s.io/controller-manager => k8s.io/controller-manager v0.26.9
+	k8s.io/cri-api => k8s.io/cri-api v0.26.9
+	k8s.io/csi-translation-lib => k8s.io/csi-translation-lib v0.26.9
+	k8s.io/kube-aggregator => k8s.io/kube-aggregator v0.26.9
+	k8s.io/kube-controller-manager => k8s.io/kube-controller-manager v0.26.9
+	k8s.io/kube-proxy => k8s.io/kube-proxy v0.26.9
+	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.26.9
+	k8s.io/kubectl => k8s.io/kubectl v0.26.9
+	k8s.io/kubelet => k8s.io/kubelet v0.26.9
+	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.26.9
+	k8s.io/metrics => k8s.io/metrics v0.26.9
+	k8s.io/mount-utils => k8s.io/mount-utils v0.26.9
 	k8s.io/node-api => k8s.io/node-api v0.26.0
-	k8s.io/pod-security-admission => k8s.io/pod-security-admission v0.26.0
-	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.26.0
-	k8s.io/sample-cli-plugin => k8s.io/sample-cli-plugin v0.26.0
-	k8s.io/sample-controller => k8s.io/sample-controller v0.26.0
+	k8s.io/pod-security-admission => k8s.io/pod-security-admission v0.26.9
+	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.26.9
+	k8s.io/sample-cli-plugin => k8s.io/sample-cli-plugin v0.26.9
+	k8s.io/sample-controller => k8s.io/sample-controller v0.26.9
 )
