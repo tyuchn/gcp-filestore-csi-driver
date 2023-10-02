@@ -28,7 +28,8 @@
   "labels": [
     "renovate/stop-updating",
     "kind/clean-up",
-    "release-note/misc",
+    "area/dependency",
+    "release-note-none",
     "ok-to-test",
   ],
   "stopUpdatingLabel": "renovate/stop-updating",
