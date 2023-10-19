@@ -23,4 +23,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
         WITH_V: true
-        DRY_RUN: true
+        PRERELEASE: true
+        PRERELEASE_SUFFIX: rc
+        DEFAULT_BUMP: patch
