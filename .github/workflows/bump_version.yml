@@ -23,16 +23,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
         WITH_V: true
-        PRERELEASE: true
-        PRERELEASE_SUFFIX: rc
+        # PRERELEASE: true
+        # PRERELEASE_SUFFIX: rc
         DEFAULT_BUMP: patch
 
     - name: Cut release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: true
+        # prerelease: true
         title: "Development Build"
         files: |
           LICENSE.txt
