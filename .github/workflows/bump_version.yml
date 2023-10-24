@@ -26,3 +26,10 @@ jobs:
         PRERELEASE: true
         PRERELEASE_SUFFIX: rc
         DEFAULT_BUMP: patch
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
+        files: |
+          LICENSE.txt
