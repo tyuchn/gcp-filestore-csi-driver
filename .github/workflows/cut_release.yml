@@ -31,6 +31,8 @@ jobs:
       uses: anothrNick/github-tag-action@1.67.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEFAULT_BRANCH: release-1.3
+        RELEASE_BRANCHES: release-1.3
         CUSTOM_TAG: ${{ steps.get_patch_version.outputs.patch_version }}
 
         
