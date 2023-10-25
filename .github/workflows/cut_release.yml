@@ -23,7 +23,7 @@ jobs:
       run: |
         LATEST_TAG=$(git tag | grep -E 'v1\.3\.[0-9]+' | grep -v 'rc' | sort -V | tail -n 1)
         PATCH_VERSION="${LATEST_TAG##*.}"
-        NEW_TAG="v1.3.${PATCH_VERSION+1}"
+        NEW_TAG="v1.3.$((PATCH_VERSION+1))"
         echo "::set-output name=patch_version::$NEW_TAG"
       shell: bash
 
