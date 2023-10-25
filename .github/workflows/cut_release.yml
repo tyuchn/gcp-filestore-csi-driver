@@ -18,24 +18,21 @@ jobs:
         ref: ${{ github.event.pull_request.merge_commit_sha }}
         fetch-depth: '0'
 
-    - name: Filter tags
-      id: filter_tags
+    - name: Get the latest tag
+      id: get-latest-tag
       run: |
-        # Define the major and minor version you're interested in
-        major_minor_version="1.3"
+        LATEST_TAG=$(git describe --tags --match "v1.3.*" --abbrev=0)
+        echo "::set-output name=latest_tag::$LATEST_TAG"
 
-        # Get the latest tag that matches the major and minor version
-        latest_tag=""
-        for tag in ${{ steps.get_latest_tag.outputs.tags }}; do
-          if [[ "$tag" == "v${major_minor_version}."* ]]; then
-            latest_tag="$tag"
-            break
-          fi
-        done
+    - name: Get the latest patch version
+      id: get-latest-patch
+      run: |
+        LATEST_TAG=${{ steps.get-latest-tag.outputs.latest_tag }}
+        LATEST_PATCH_VERSION=$(echo $LATEST_TAG | sed 's/v1.3.//')
+        echo "::set-output name=latest_patch_version::$LATEST_PATCH_VERSION"
 
-        echo "Latest tag for $major_minor_version: $latest_tag"
-        echo "::set-output name=latest_tag::$latest_tag"
-      shell: bash
+    - name: Output Latest Patch Version
+      run: echo "Latest patch version is ${{ steps.get-latest-patch.outputs.latest_patch_version }}"
 
     - name: Bump version and push tag
       id: bump_version_and_push_tag
