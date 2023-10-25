@@ -20,7 +20,7 @@ jobs:
 
     - name: Bump version and push tag
       id: bump_version_and_push_tag
-      uses: anothrNick/github-tag-action@latest
+      uses: anothrNick/github-tag-action@1.67.0
       with:
         tag: 1.3.0
       env:
