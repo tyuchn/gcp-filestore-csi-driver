@@ -27,6 +27,10 @@ jobs:
         DEFAULT_BUMP: patch
         RELEASE_BRANCHES: release-1.3
         INITIAL_VERSION: 1.3.0
+        TAG_CONTEXT: branch
+        MINOR_STRING_TOKEN: 1.3
+
+        
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
